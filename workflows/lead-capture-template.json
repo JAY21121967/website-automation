@@ -1,0 +1,72 @@
+{
+  "name": "Website Lead Capture - Template",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "website-lead",
+        "responseMode": "onReceived"
+      },
+      "id": "lead-webhook",
+      "name": "Website Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "website-lead-template"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json; return [{json:{name:body.name ?? '',email:body.email ?? '',phone:body.phone ?? '',message:body.message ?? '',received_at:new Date().toISOString()}}];"
+      },
+      "id": "normalize-lead",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Connect Google Sheets, your CRM, email, Telegram, or another destination here.",
+        "height": 220,
+        "width": 360
+      },
+      "id": "destination-note",
+      "name": "Lead Destination",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -100
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Website Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "template",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

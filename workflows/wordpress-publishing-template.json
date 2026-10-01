@@ -1,0 +1,88 @@
+{
+  "name": "WordPress Publishing - Template",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "title",
+              "name": "title",
+              "value": "Example Website Automation Article",
+              "type": "string"
+            },
+            {
+              "id": "content",
+              "name": "content",
+              "value": "<p>Replace this example with approved article content.</p>",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "draft",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "article-data",
+      "name": "Approved Article Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Use an HTTP Request node or the WordPress node with your own WordPress credentials. Publishing should happen only after review.",
+        "height": 240,
+        "width": 420
+      },
+      "id": "wordpress-note",
+      "name": "WordPress Configuration",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -100
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Approved Article Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "template",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
