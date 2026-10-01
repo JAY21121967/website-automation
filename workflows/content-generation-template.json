@@ -1,107 +1,346 @@
 {
-  "name": "Website Content Automation - Template",
+  "name": "Website Automation – AI Content to WordPress",
   "nodes": [
     {
-      "parameters": {},
-      "id": "manual-trigger",
-      "name": "Manual Trigger",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ]
-    },
-    {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "topic",
-              "name": "topic",
-              "value": "Website automation",
-              "type": "string"
-            },
-            {
-              "id": "keyword",
-              "name": "keyword",
-              "value": "website automation",
-              "type": "string"
-            }
+        "rule": {
+          "interval": [
+            {}
           ]
         }
       },
-      "id": "sample-input",
-      "name": "Sample Content Brief",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
       "position": [
-        220,
-        0
-      ]
+        -656,
+        -112
+      ],
+      "id": "b700a9cb-4119-41d8-97b6-dd30b6799b11",
+      "name": "Schedule Trigger"
     },
     {
       "parameters": {
-        "jsCode": "return [{json:{...$json, prompt:`Write a practical article about ${$json.topic}. Primary keyword: ${$json.keyword}. Use clear headings and examples.`}}];"
+        "documentId": {
+          "__rl": true,
+          "value": "1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg",
+          "mode": "list",
+          "cachedResultName": "Website Automation Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg/edit#gid=0"
+        },
+        "options": {}
       },
-      "id": "prepare-prompt",
-      "name": "Prepare AI Prompt",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
       "position": [
-        460,
-        0
-      ]
+        -480,
+        -112
+      ],
+      "id": "ab835bcb-4643-4dd2-b823-5620874f7096",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NUYHu6AI699pVjI5",
+          "name": "Google Sheets account"
+        }
+      }
     },
     {
       "parameters": {
-        "content": "Connect this node to your preferred AI provider. Keep API credentials inside n8n Credentials.",
-        "height": 220,
-        "width": 320
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8197403e-7a26-4371-be6c-dd835efbce34",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Ready",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
-      "id": "ai-note",
-      "name": "AI Provider Placeholder",
-      "type": "n8n-nodes-base.stickyNote",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -272,
+        -112
+      ],
+      "id": "244fb251-fb8d-489f-9f2d-517ceb0a5e90",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are an expert website content writer and SEO strategist.\n\nYour job is to create practical, original website articles for small businesses.\n\nFollow the user's requirements exactly.\n\nWrite clear, useful content without keyword stuffing, exaggerated claims, or unsupported statements.\n\nWhen requested, return structured JSON exactly in the format specified by the user."
+            },
+            {
+              "content": "=Create a practical, useful article for a business website.\n\nTopic:\n{{ $('Get row(s) in sheet').item.json.Topic }}\n\nPrimary keyword:\n{{ $('Get row(s) in sheet').item.json.keyword }}\n\nRequirements:\n\n- Write for small business owners.\n- Explain the topic clearly.\n- Use practical examples.\n- Include an engaging introduction.\n- Use H2 and H3 headings.\n- Include actionable advice.\n- Avoid keyword stuffing.\n- Avoid unsupported claims.\n- Write approximately 1000-1500 words.\n- Return clean HTML suitable for WordPress.\n\nReturn ONLY valid JSON in this exact structure:\n\n{\n  \"title\": \"Article title\",\n  \"content\": \"<p>Article content...</p>\",\n  \"meta_description\": \"SEO meta description\",\n  \"slug\": \"article-url-slug\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -48,
+        -128
+      ],
+      "id": "cd5a7422-810e-48f5-92cc-db356cb5db61",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yTUr3vIpqyG95TJe",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "title": "={{ JSON.parse($('Message a model').item.json.output[0].content[0].text).title }}",
+        "additionalFields": {
+          "content": "={{ JSON.parse($('Message a model').item.json.output[0].content[0].text).content }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
       "typeVersion": 1,
       "position": [
-        680,
-        -120
-      ]
+        224,
+        -128
+      ],
+      "id": "785c2fa2-34e3-423a-a5d7-14505dd89469",
+      "name": "Create a post",
+      "credentials": {
+        "wordpressApi": {
+          "id": "cluVxn1DsQbgIeqU",
+          "name": "Wordpress account 2"
+        }
+      }
     },
     {
       "parameters": {
-        "content": "Human approval should happen before publishing to a production WordPress website.",
-        "height": 180,
-        "width": 320
+        "chatId": "=8199897341",
+        "text": "=🚀 New Website Article Draft\n\nTitle:\n{{ $json.title.rendered }}\n\nEdit Draft:\nhttps://realestate.varahiai.com/wp-admin/post.php?post={{ $json.id }}&action=edit\n\nStatus:\n{{ $json.status }}\n\nPlease review the article in WordPress before publishing.",
+        "additionalFields": {}
       },
-      "id": "approval-note",
-      "name": "Approval Step",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
       "position": [
-        680,
-        120
-      ]
+        400,
+        -128
+      ],
+      "id": "0ca9e23b-f50c-4344-8602-7525b7d03977",
+      "name": "Send a text message",
+      "webhookId": "4bc738b4-e219-4bc5-adb3-942f9c3a15ca",
+      "credentials": {
+        "telegramApi": {
+          "id": "uJAJo5WwO0KOOup8",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg",
+          "mode": "list",
+          "cachedResultName": "Website Automation Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3HtOBg-0lgDm_t-UA52oTyZJSKQeXbVZCzbUpEvjwg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Topic": "={{ $('Get row(s) in sheet').item.json.Topic }}",
+            "status": "={{ $('Create a post').item.json.status }}",
+            "wp_url": "={{ $('Create a post').item.json.link }}",
+            "created_at": "={{ $('Create a post').item.json.date }}",
+            "keyword": "={{ $('Get row(s) in sheet').item.json.keyword }}",
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "wp_url",
+              "displayName": "wp_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        -128
+      ],
+      "id": "be273a38-4b3e-4a77-a421-d75b1666afbe",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NUYHu6AI699pVjI5",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
-    "Manual Trigger": {
+    "Schedule Trigger": {
       "main": [
         [
           {
-            "node": "Sample Content Brief",
+            "node": "Get row(s) in sheet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Sample Content Brief": {
+    "Get row(s) in sheet": {
       "main": [
         [
           {
-            "node": "Prepare AI Prompt",
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
             "type": "main",
             "index": 0
           }
@@ -111,11 +350,15 @@
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
-  "versionId": "template",
+  "versionId": "1d664566-ae29-4696-afec-ec87a3d13ac4",
   "meta": {
-    "templateCredsSetupCompleted": false
+    "templateCredsSetupCompleted": true,
+    "instanceId": "56fa5c8e670618959800b5da5c32fb9960248f9e02ed85acf0fdcdadb17910ea"
   },
+  "nodeGroups": [],
+  "id": "Bdbhk6fTi5mQ4Ovz",
   "tags": []
 }
